@@ -1,0 +1,7 @@
+ <h1>Forcejs Quick Start</h1>
+    <div *ngIf="!loggedIn">
+      <button class="slds-button slds-button--success" (click)="login()">Login</button>
+    </div>
+    <div *ngIf="loggedIn">
+      <button class="slds-button slds-button--destructive" (click)="logout()" >Logout</button>
+    </div>
