@@ -5,3 +5,6 @@
     <div *ngIf="loggedIn">
       <button class="slds-button slds-button--destructive" (click)="logout()" >Logout</button>
     </div>
+    	<div class="slds-card" *ngFor="let contact of contacts; let i=index">
+    		{{contact.Name}}
+    	</div>

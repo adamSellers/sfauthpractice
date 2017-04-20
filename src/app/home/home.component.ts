@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { OAuth, DataService} from 'forcejs';
+import 'rxjs/Rx';
 
 @Component({
   selector: 'app-home',
@@ -13,6 +14,9 @@ export class HomeComponent implements OnInit {
 	public oauth: any;
 	public loggedIn: boolean = false;
 	public service:any;
+	public oauthData: any;
+	public loginURL = 'https://login.salesforce.com';
+	public callbackURL = 'http://localhost:4200/oauthcallback.html';
 
   constructor() { }
 
@@ -32,19 +36,31 @@ export class HomeComponent implements OnInit {
 
   	login() {
 
-	  	this.oauth = OAuth.createInstance(this.clientId);
+	  	this.oauth = OAuth.createInstance(this.clientId, this.loginURL, this.callbackURL );
 
 	  	this.oauth.login()
-	  		.then(oauthresult => {
-	  			this.service = DataService.createInstance(oauthresult);
+	  		.then((oauthData) => {
+	  			this.service = DataService.createInstance(oauthData, {proxyURL: "https://adamsappcloud.my.salesforce.com/"});
 	  			//set user details in local storage
 	  			localStorage.setItem('accessToken', this.service.accessToken);
 	  			localStorage.setItem('instanceURL', this.service.instanceURL);
 	  			localStorage.setItem('userId', this.service.userId);
 	  			this.loggedIn = true;
+	  			console.log(oauthData);
+	  			this.loadContacts();
 	  			//window.location.reload();
 	  		});
 
+  	}
+
+  	loadContacts() {
+  		console.log('instance is: ' + JSON.stringify(this.service));
+  		this.service.query('select id, Name from Contact LIMIT 50')
+  		.then((response) => {
+  			console.log('length of records: ' + response.records.length);
+            this.contacts = response.records;
+            console.log('contacts are: ' + JSON.stringify(this.contacts));
+        });
   	}
 
   	logout() {
